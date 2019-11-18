@@ -531,7 +531,14 @@ ZWayServerAccessory.prototype = {
                 } else if(stype === "WindowCovering"){
                     services.push(new Service.WindowCovering(vdev.metrics.title, vdev.id));
                 } else if (stype === "Fan") {
-                    services.push(new Service.Fan(vdev.metrics.title, vdev.id));
+					var fanSvc = new Service.Fan(vdev.metrics.title, vdev.id);
+					if(this.platform.getTagValue(vdev, "Device.Special") === "GE_InWallSmartFan")
+					{
+						var rotSpdChar = fanSvc.getCharacteristic(Characteristic.RotationSpeed);
+						rotSpdChar.props.minStep = 30;
+						rotSpdChar.props.maxValue = 90;
+					}
+					services.push(fanSvc);
                 } else {
                     services.push(new Service.Lightbulb(vdev.metrics.title, vdev.id));
                 }
